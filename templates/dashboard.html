@@ -1,0 +1,53 @@
+{% extends "layout.html" %}
+{% block content %}
+    <div class="jumbotron jumbotron-fluid" style="text-align: center;">
+    <h1 class="display-4" >Welcome To Dashboard! </h1>
+    <h5 style="text-align: center;padding-top: 10mm;"><b><i>Hello {{ session['s_name'] }}!</i></b></h5>
+    </div>
+    <div class="jumbotron jumbotron-fluid" style="padding-left: 10mm; padding-right: 10mm;padding-top: 5mm;padding-bottom: 5mm;">
+    <legend class="border-bottom mb-2" style="text-align: center;">POST YOUR ARTICLE</legend>
+    
+        <form method="POST" action="">
+            <div class="content-section">
+            {{ form.hidden_tag() }}
+                
+                   <b> {{ form.title.label(class="form-control-label") }}</b>
+                    <div class="form-group">
+
+                    {% if form.title.errors %}
+                        {{ form.title(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.title.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.title(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="content-section">
+                <div class="form-group">
+                  <b>  {{ form.body.label(class="form-control-label") }}</b>
+
+                    {% if form.body.errors %}
+                        {{ form.body(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.body.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.body(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="form-group">
+                {{ form.submit(class="btn btn-outline-info") }}
+            </div>
+            
+        </form>
+    </div>
+            
+            
+{% endblock content %}

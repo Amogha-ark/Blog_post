@@ -1,0 +1,52 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="jumbotron jumbotron-fliud" style="padding-top:10mm;">
+   {%if session['s_name']%}
+    <h5>Hello {{session['s_name']}}!</h5> 
+    <h2><i>Welcome to home page of Dash-ping!</i></h2>
+        <h6> Login to our page to write a post.</h6>
+        <p style="padding-top: 8mm;">Hello Guys!!!
+            This is done by using Flask-Framework,Using this you
+            can upload Post !!
+        </p>
+    {% else %}
+        <h2>Welcome to home page of Dash-ping!</h2>
+        <h6> Login to our page to write a post.</h6>
+        <p style="padding-top: 8mm;">Hello Guys!!!
+            This is done by using Flask-Framework,Using this you
+            can upload Post !!
+        </p>
+    {% endif %}
+</div>
+<legend class="border-bottom mb-3" style="text-align: center;font-size: 10mm;"><b>ARTICLES</b></legend>
+    {% for article in articles %}
+        <table class="table table-sm table-dark">
+                
+                
+            <div class="card" style="width: 50rem; padding-block-start: 10px;">
+                <div class="card-body">
+                <h5 class="card-title">Title : {{article[1]}}</h5>
+                <h6 class="card-subtitle mb-4 text-muted">Date_posted : {{article[4]}}</h6>
+                <p class="card-text">{{article[3]}}</p>
+                <h6> Author : {{article[2]}} </h6>
+                {% if session['logged_in'] %}
+                    {% if session['s_name'] == article[2] %}
+                        <a href="edit_article/{{article[0]}}" class="btn btn-secondary">Edit</a>
+                        <a href="delete_article/{{article[0]}}" class="btn btn-danger">Delete</a>
+                        
+                        
+                    {% else %}
+                        <a href="edit_article/{{article[0]}}" class="btn btn-secondary disabled">Edit</a>
+                        <a href="#" class="btn btn-danger disabled">Delete</a>
+                    {% endif %}
+                {% else %}
+                    <a href="edit_article/{{article[0]}}" class="btn btn-secondary disabled">Edit</a>
+                    <a href="#" class="btn btn-danger disabled">Delete</a>
+                {% endif %}
+                </div>
+            </div>
+                
+        </table>
+    {% endfor %}
+
+{% endblock content %}

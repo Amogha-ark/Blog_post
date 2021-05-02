@@ -1,0 +1,138 @@
+
+<!DOCTYPE html>
+<title> MY Chat</title>
+<head>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+</head>
+<body >
+    <div class="jumbotron">
+        <div class="container text-center">
+            <h1>Welcome {{username}}!!</h1>
+            <h4>Welcome to simple chat application !!</h4>
+            <small>Select Your particular group and start your chat !</small>
+
+        </div>
+    </div>
+           
+    <hr>
+       <div class = "add_img">
+
+       <table class="table">
+       <div id="main-section" class = "row">
+        
+            <div class="col-md-auto">
+            <h3 style="margin-left: 10mm;"><b><i>ROOMS</i></b></h3>
+            <ul class="list-group col-20 " style="margin-left: 10mm; ">
+               
+            {% for room in rooms%}
+            <a  href ="#" class="list-group-item " id="select-room"><b>{{   room   }}</b></a>
+            {% endfor %}
+        
+        </ul>
+            </div>
+        
+        
+        <hr>
+        <div id="rightside-pannel"class = "col">
+        <div id = "display-message-section" class="jumbotron jumbotron-fliud " style="margin-right:100mm ;margin-left: 70mm;">
+
+
+
+
+        </div>
+        <div id="input-area" class = "container" style="margin-left: 65mm;">
+            <div class="form-group">
+            
+            <label><b>Enter Your text</b></label>
+            
+            <input type="text" id="user_message" placeholder="Send a message" autocomplete="off" class="form-control col-sm-6" name="umsg">
+        </div>
+        
+            <button type="button" id="send_message" class = "btn btn-primary"> Send</button>
+    
+        </div>
+
+       </div>
+    </table>
+       <div style="height:400px"></div>
+       </div>
+       <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+      
+     </body>
+    
+     <script>
+     var socket = io.connect('http://127.0.0.1:5000/');
+     const username = `{{ username }}`;
+        let room = "ROOM 1";
+        join_room("ROOM 1");
+     socket.on('connect',() =>{
+         socket.send("{{ username }} connected To Chat!!");
+     });
+     
+     // to display the message this event is used
+     socket.on('message',function(data) {
+         const p = document.createElement('p');
+         const br = document.createElement('br');
+         const span_time = document.createElement("span");
+         span_time.innerHTML = data.time_stamp;
+         if (data.username && data.msg){
+            p.innerHTML = '<b>'+data.username +'</b>'+ ': ' + data.msg + br.outerHTML +span_time.outerHTML;
+            document.querySelector('#display-message-section').append(p);
+            console.log(`message received: ${data}`);
+         }
+         else{
+             printsysmsg(data.msg);
+         }
+
+     });
+
+     //to send the message to the server inturn that will give to all cleints that are connected to particular class.
+     //to event message.
+     document.querySelector('#send_message').onclick = function() {
+         socket.send({'msg': document.querySelector('#user_message').value,
+         'username': username,'room':room});
+         document.querySelector('#user_message').value='';
+         document.querySelector('#user_message').focus();
+     }
+    
+    //to select which room you want
+     document.querySelectorAll('#select-room').forEach(p =>{
+         p.onclick = () =>{
+             let newroom = p.innerHTML;
+             if (newroom == room){
+                 msg= `you are already in ${room} room.`
+                 printsysmsg(msg);
+             }
+             else{
+                 leave_room(room);
+                 join_room(newroom);
+                 room =newroom;
+             }
+         }
+     });
+
+
+     function leave_room(room){
+         socket.emit('leave',{'username':username,'room':room});
+     }
+
+
+     function join_room(room){
+        socket.emit('join',{'username':username,'room':room});
+        document.querySelector('#display-message-section').innerHTML=''
+     }
+
+     function printsysmsg(msg){
+         const p = document.createElement("p");
+         p.innerHTML= '<b>'+ msg + '</b>';
+         document.querySelector('#display-message-section').append(p);
+     }
+
+     
+    </script>
+
+   
+</html>
